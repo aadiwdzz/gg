@@ -1,0 +1,225 @@
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local TextLabel = Instance.new("TextLabel")
+local TextBox = Instance.new("TextBox")
+local SubmitButton = Instance.new("TextButton")
+local SpeedButton = Instance.new("TextButton")  -- 速度按钮
+local TeleportButton = Instance.new("TextButton")  -- 传送按钮
+local TeleportTextBox = Instance.new("TextBox")  -- 玩家名称输入框
+local HideButton = Instance.new("TextButton")  -- 新增隐藏按钮
+local RoundButton = Instance.new("TextButton")  -- 圆形显示按钮
+local Password = "FA114"
+local IsSpeedEnabled = false  -- 是否启用加速
+local NormalWalkSpeed = 16  -- 默认行走速度
+local SpeedMultiplier = 50  -- 加速倍数
+local IsHidden = false  -- 判断是否隐藏
+
+-- 设置ScreenGui的属性
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+-- 设置Frame（背景框）的属性
+Frame.Parent = ScreenGui
+Frame.Size = UDim2.new(0.6, 0, 0.5, 0)  -- 增加背景框宽度和高度
+Frame.Position = UDim2.new(0.2, 0, 0.25, 0)  -- 调整位置使其居中
+Frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)  -- 背景颜色
+Frame.BorderSizePixel = 0  -- 无边框
+Frame.BackgroundTransparency = 0.5  -- 背景透明度
+
+-- 设置TextLabel（标题文字）的属性
+TextLabel.Parent = Frame
+TextLabel.Text = "请输入密码"
+TextLabel.TextSize = 30
+TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.BackgroundTransparency = 1
+TextLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+TextLabel.Position = UDim2.new(0.5, 0, 0.2, 0)  -- 文字居中
+
+-- 设置TextBox（输入框）的属性
+TextBox.Parent = Frame
+TextBox.Size = UDim2.new(0.8, 0, 0.2, 0)  -- 输入框大小
+TextBox.Position = UDim2.new(0.5, 0, 0.5, 0)  -- 输入框位置
+TextBox.PlaceholderText = "输入密码"
+TextBox.TextSize = 25
+TextBox.TextColor3 = Color3.fromRGB(0, 0, 0)
+TextBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TextBox.TextTransparency = 0.5
+
+-- 设置SubmitButton（提交按钮）的属性
+SubmitButton.Parent = Frame
+SubmitButton.Size = UDim2.new(0.6, 0, 0.2, 0)  -- 按钮大小
+SubmitButton.Position = UDim2.new(0.5, 0, 0.8, 0)  -- 按钮位置
+SubmitButton.Text = "提交"
+SubmitButton.TextSize = 25
+SubmitButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+SubmitButton.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+
+-- 设置SpeedButton（速度按钮）的属性，默认隐藏
+SpeedButton.Parent = Frame
+SpeedButton.Size = UDim2.new(0.4, 0, 0.2, 0)  -- 缩小按钮
+SpeedButton.Position = UDim2.new(0.25, 0, 0.8, 0)  -- 调整位置
+SpeedButton.Text = "启用加速"
+SpeedButton.TextSize = 20
+SpeedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpeedButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+SpeedButton.Visible = false  -- 初始时隐藏速度按钮
+
+-- 设置TeleportButton（传送按钮）的属性，默认隐藏
+TeleportButton.Parent = Frame
+TeleportButton.Size = UDim2.new(0.4, 0, 0.2, 0)  -- 缩小按钮
+TeleportButton.Position = UDim2.new(0.6, 0, 0.8, 0)  -- 调整位置
+TeleportButton.Text = "传送玩家"
+TeleportButton.TextSize = 20
+TeleportButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+TeleportButton.BackgroundColor3 = Color3.fromRGB(0, 0, 255)
+TeleportButton.Visible = false  -- 初始时隐藏传送按钮
+
+-- 设置TeleportTextBox（传送目标玩家名称输入框）的属性，默认隐藏
+TeleportTextBox.Parent = Frame
+TeleportTextBox.Size = UDim2.new(0.8, 0, 0.2, 0)  -- 输入框大小
+TeleportTextBox.Position = UDim2.new(0.5, 0, 0.5, 0)  -- 输入框位置
+TeleportTextBox.PlaceholderText = "输入玩家名称"
+TeleportTextBox.TextSize = 25
+TeleportTextBox.TextColor3 = Color3.fromRGB(0, 0, 0)
+TeleportTextBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TeleportTextBox.Visible = false  -- 初始时隐藏
+
+-- 设置HideButton（隐藏按钮）的属性
+HideButton.Parent = Frame
+HideButton.Size = UDim2.new(0.4, 0, 0.2, 0)  -- 隐藏按钮大小
+HideButton.Position = UDim2.new(0.5, 0, 1.0, 0)  -- 位置
+HideButton.Text = "隐藏"
+HideButton.TextSize = 20
+HideButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+HideButton.BackgroundColor3 = Color3.fromRGB(200, 200, 0)
+
+-- 设置RoundButton（圆形按钮）的属性，点击后显示界面
+RoundButton.Parent = ScreenGui
+RoundButton.Size = UDim2.new(0, 50, 0, 50)  -- 圆形按钮
+RoundButton.Position = UDim2.new(0.9, 0, 0.5, 0)  -- 放置在屏幕右侧中间
+RoundButton.Text = "+"
+RoundButton.TextSize = 30
+RoundButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+RoundButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+RoundButton.BackgroundTransparency = 0.2
+RoundButton.Visible = false  -- 初始时隐藏
+
+-- 添加右上角名单按钮
+local ListButton = Instance.new("TextButton")
+ListButton.Parent = ScreenGui
+ListButton.Size = UDim2.new(0, 100, 0, 40)  -- 按钮大小
+ListButton.Position = UDim2.new(0.8, 0, 0, 0)  -- 右上角位置
+ListButton.Text = "名单"
+ListButton.TextSize = 20
+ListButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ListButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ListButton.BackgroundTransparency = 0.5
+
+-- 名单界面
+local ListFrame = Instance.new("Frame")
+ListFrame.Parent = ScreenGui
+ListFrame.Size = UDim2.new(0.3, 0, 0.4, 0)  -- 大小
+ListFrame.Position = UDim2.new(0.7, 0, 0.2, 0)  -- 位置
+ListFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+ListFrame.BorderSizePixel = 0
+ListFrame.Visible = false  -- 初始时隐藏
+
+local ListTextLabel = Instance.new("TextLabel")
+ListTextLabel.Parent = ListFrame
+ListTextLabel.Size = UDim2.new(1, 0, 1, 0)
+ListTextLabel.Text = "脚本制作者：CN _FA114\n测试人员：bshshdhsh92\n← 这个是我儿子"
+ListTextLabel.TextSize = 20
+ListTextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+ListTextLabel.BackgroundTransparency = 1
+
+-- 点击名单按钮时，显示名单界面
+ListButton.MouseButton1Click:Connect(function()
+    ListFrame.Visible = not ListFrame.Visible  -- 切换可见状态
+end)
+
+-- 当点击提交按钮时
+SubmitButton.MouseButton1Click:Connect(function()
+    if TextBox.Text == Password then
+        TextLabel.Text = "密码正确，欢迎进入脚本中心！"
+        TextBox:Destroy()
+        SubmitButton:Destroy()
+        SpeedButton.Visible = true
+        TeleportButton.Visible = true
+        TeleportTextBox.Visible = true
+        HideButton.Visible = true
+    else
+        TextLabel.Text = "密码错误，请重新输入！"
+        TextBox.Text = ""
+    end
+end)
+
+-- 启用加速功能
+local function enableSpeed()
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:WaitForChild("Humanoid")
+    humanoid.WalkSpeed = NormalWalkSpeed * SpeedMultiplier
+    IsSpeedEnabled = true
+    SpeedButton.Text = "禁用加速"
+end
+
+-- 禁用加速功能
+local function disableSpeed()
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:WaitForChild("Humanoid")
+    humanoid.WalkSpeed = NormalWalkSpeed
+    IsSpeedEnabled = false
+    SpeedButton.Text = "启用加速"
+end
+
+-- 当点击速度按钮时
+SpeedButton.MouseButton1Click:Connect(function()
+    if not IsSpeedEnabled then
+        enableSpeed()
+    else
+        disableSpeed()
+    end
+end)
+
+-- 玩家传送功能
+local function teleportPlayer()
+    local player = game.Players.LocalPlayer
+    local targetPlayerName = TeleportTextBox.Text
+    local targetPlayer = game.Players:FindFirstChild(targetPlayerName)
+
+    if targetPlayer then
+        player.Character:MoveTo(targetPlayer.Character.HumanoidRootPart.Position)
+        TextLabel.Text = "传送成功！"
+    else
+        TextLabel.Text = "玩家未找到，请检查名称！"
+    end
+end
+
+-- 当点击传送按钮时
+TeleportButton.MouseButton1Click:Connect(function()
+    teleportPlayer()
+end)
+
+-- 隐藏脚本中心
+HideButton.MouseButton1Click:Connect(function()
+    if not IsHidden then
+        Frame.Visible = false
+        HideButton.Text = "显示"
+        RoundButton.Visible = true
+        IsHidden = true
+    else
+        Frame.Visible = true
+        HideButton.Text = "隐藏"
+        RoundButton.Visible = false
+        IsHidden = false
+    end
+end)
+
+-- 点击圆形按钮时显示脚本中心
+RoundButton.MouseButton1Click:Connect(function()
+    Frame.Visible = true
+    HideButton.Text = "隐藏"
+    RoundButton.Visible = false
+    IsHidden = false
+end)
